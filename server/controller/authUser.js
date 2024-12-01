@@ -97,17 +97,21 @@ const authRole = async (req, res) => {
 
 const viewProfile = async (req, res) => {
   try {
-
     const studentSID = req.query.SID; 
+    // checking whether the SID is empty or not
+    if((studentSID.length === 0)){
+      return res.status(400).json({ message: 'SID is invalid' });
+    }
     const personalResult = await pool.query(`SELECT * FROM Student_Personal WHERE SID = $1`, [studentSID]);
-
+    
+    // checking whether the personal info is existed in database or not for the given SID?
     if (personalResult.rows.length === 0) {
       return res.status(404).json({ message: 'Student personal information not found!' });
     }
     const studentPersonal = personalResult.rows[0];
   
     const academicResult = await pool.query(`SELECT * FROM Student_Academic WHERE SID = $1`, [studentSID]);
-
+    // checking whether the academic info is existed in database or not for the given SID?
     if (academicResult.rows.length === 0) {
       return res.status(404).json({ message: 'Student academic information not found!' });
     }
@@ -137,7 +141,7 @@ const viewProfile = async (req, res) => {
 
     return res.status(200).json(profile);
   } catch (error) {
-    console.error('Error during fetching profile:', error);
+    // console.error('Error during fetching profile:', error);
     return res.status(500).json({ message: 'Internal server error occurred!!' });
   }
 };
